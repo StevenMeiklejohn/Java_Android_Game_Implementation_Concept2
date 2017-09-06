@@ -3,6 +3,7 @@ package example.codeclan.com.spacebastardsconceptbuild;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.support.constraint.solver.widgets.Rectangle;
 
 import java.util.Random;
 
@@ -36,6 +37,34 @@ public class Sprite {
         setStartingPositionAndSpeed();
     }
 
+    public Rect getCollisionBox(){
+        return this.detectCollision;
+    }
+
+    public int getX(){
+        return this.x;
+    }
+
+
+    public int getY(){
+        return this.y;
+    }
+
+    public int getHeight(){
+        return this.height;
+    }
+
+    public int getWidth(){
+        return this.width;
+    }
+
+    public boolean isCollision(Rect rect){
+        if(this.detectCollision.intersect(rect)){
+            return true;
+        }
+        return false;
+    }
+
     private void setStartingPositionAndSpeed(){
         Random rnd = new Random();
         x = gameView.getWidth() - width;
@@ -43,7 +72,6 @@ public class Sprite {
         xSpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
         ySpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
     }
-
 
 
     private void update() {

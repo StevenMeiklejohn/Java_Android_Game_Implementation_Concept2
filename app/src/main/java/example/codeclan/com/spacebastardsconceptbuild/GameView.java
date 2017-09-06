@@ -6,10 +6,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.util.ArrayList;
+
+import static android.R.attr.width;
 
 public class GameView extends SurfaceView {
     private Bitmap bmp;
@@ -183,10 +187,43 @@ public class GameView extends SurfaceView {
         return super.onTouchEvent(event);
     }
 
+
+
+    public boolean collisionLoop() {
+        System.out.println("Collision loop triggered");
+
+            synchronized (getHolder()) {
+                for (int i = sprites.size() - 1; i >= 0; i--) {
+                    Sprite sprite = sprites.get(i);
+                    if(this.player.isCollision(sprite)){
+                        sprites.remove(sprite);
+                    }
+//                    if(sprite.getX() <= this.player.getX() + this.player.getWidth()) {
+//                        if (sprite.getX() >= this.player.getX()) {
+//                            if (sprite.getY() >= this.player.getY()) {
+//                                if (sprite.getY() <= this.player.getY() - this.player.getHeight()) {
+//                                    if (sprite.getY() >= this.player.getY()) {
+//                                        sprites.remove(sprite);
+////                                        break;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                    if (sprite.isCollision(this.player.getCollisionBox())) {
+//                        System.out.println("Remove sprite triggered");
+//                        sprites.remove(sprite);
+//                        break;
+//                    }
+                }
+            }
+        return true;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
-
         createBackground(canvas);
+        collisionLoop();
         for (Sprite sprite : sprites) {
             sprite.onDraw(canvas);
         }

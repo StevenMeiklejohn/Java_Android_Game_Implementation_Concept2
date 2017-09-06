@@ -6,6 +6,8 @@ import android.graphics.Rect;
 
 import java.util.Random;
 
+import static example.codeclan.com.spacebastardsconceptbuild.R.drawable.enemy;
+
 
 public class Player {
     private int x;
@@ -41,8 +43,28 @@ public class Player {
         ySpeed =14;
     }
 
-    public Rect getDetectCollision(){
+    public Rect getCollisionBox(){
         return this.detectCollision;
+    }
+
+    public int getX(){
+        return this.x;
+    }
+
+    public int getY(){
+        return this.y;
+    }
+
+    public int getWidth(){
+        return this.width;
+    }
+
+    public int getHeight(){
+        return this.height;
+    }
+
+    public boolean isCollision(Sprite sprite){
+        return x < sprite.getX() + sprite.getWidth() && x + this.width > sprite.getX() && this.y < sprite.getY() + sprite.getHeight() && y + this.height > sprite.getY();
     }
 
     public void setMovingUp(){
