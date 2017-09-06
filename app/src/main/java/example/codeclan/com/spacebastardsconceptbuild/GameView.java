@@ -13,7 +13,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.util.ArrayList;
 
+import static android.R.attr.resource;
 import static android.R.attr.width;
+import static android.R.attr.x;
+import static android.R.attr.y;
+import static android.media.CamcorderProfile.get;
 
 public class GameView extends SurfaceView {
     private Bitmap bmp;
@@ -27,6 +31,7 @@ public class GameView extends SurfaceView {
     private Bitmap left;
     private Bitmap right;
     private ArrayList<Sprite> sprites;
+    private ArrayList<Explosion> explosions;
     private ArrayList<Star> stars = new ArrayList<Star>();
 
     public GameView(Context context) {
@@ -34,6 +39,7 @@ public class GameView extends SurfaceView {
         gameLoopThread = new GameLoopThread(this);
         holder = getHolder();
         sprites = new ArrayList<Sprite>();
+        explosions = new ArrayList<Explosion>();
         paint = new Paint();
         holder.addCallback(new SurfaceHolder.Callback() {
 
@@ -128,6 +134,12 @@ public class GameView extends SurfaceView {
         this.player =  new Player(this, bmp);
     }
 
+    private void createExplosion(float x, float y){
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.explosion_sprite_sheet);
+        Explosion newExplosion = new Explosion(explosions, this, x, y, bmp);
+        this.explosions.add(newExplosion);
+    }
+
     private void createButtons(int resource_up, int resource_down, int resource_left, int resource_right){
         this.up = BitmapFactory.decodeResource(getResources(), resource_up);
         this.down = BitmapFactory.decodeResource(getResources(), resource_down);
@@ -196,25 +208,10 @@ public class GameView extends SurfaceView {
                 for (int i = sprites.size() - 1; i >= 0; i--) {
                     Sprite sprite = sprites.get(i);
                     if(this.player.isCollision(sprite)){
+                        createExplosion(sprite.getX(), sprite.getY());
                         sprites.remove(sprite);
+
                     }
-//                    if(sprite.getX() <= this.player.getX() + this.player.getWidth()) {
-//                        if (sprite.getX() >= this.player.getX()) {
-//                            if (sprite.getY() >= this.player.getY()) {
-//                                if (sprite.getY() <= this.player.getY() - this.player.getHeight()) {
-//                                    if (sprite.getY() >= this.player.getY()) {
-//                                        sprites.remove(sprite);
-////                                        break;
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                    if (sprite.isCollision(this.player.getCollisionBox())) {
-//                        System.out.println("Remove sprite triggered");
-//                        sprites.remove(sprite);
-//                        break;
-//                    }
                 }
             }
         return true;
@@ -224,6 +221,9 @@ public class GameView extends SurfaceView {
     protected void onDraw(Canvas canvas) {
         createBackground(canvas);
         collisionLoop();
+        for (int i = explosions.size() - 1; i >= 0; i--) {
+            explosions.get(i).onDraw(canvas);
+        }
         for (Sprite sprite : sprites) {
             sprite.onDraw(canvas);
         }

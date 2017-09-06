@@ -58,12 +58,7 @@ public class Sprite {
         return this.width;
     }
 
-    public boolean isCollision(Rect rect){
-        if(this.detectCollision.intersect(rect)){
-            return true;
-        }
-        return false;
-    }
+
 
     private void setStartingPositionAndSpeed(){
         Random rnd = new Random();
