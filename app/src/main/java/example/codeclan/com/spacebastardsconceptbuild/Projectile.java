@@ -3,15 +3,15 @@ package example.codeclan.com.spacebastardsconceptbuild;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.support.constraint.solver.widgets.Rectangle;
 
+import java.util.List;
 import java.util.Random;
 
 
-public class Sprite {
+public class Projectile {
 //    private static final int BMP_ROWS = 6;
 //    private static final int BMP_COLUMNS = 4;
-    private static final int MAX_SPEED = 10;
+//    private static final int MAX_SPEED = 10;
     private int x;
     private int y;
     private int xSpeed;
@@ -26,14 +26,17 @@ public class Sprite {
     private int height;
     private Rect sourceRect;
     private Rect detectCollision;
+    private List<Projectile> projectiles;
 
-    public Sprite(GameView gameView, Bitmap bmp) {
+    public Projectile(List<Projectile> projectiles, GameView gameView, int x, int y, Bitmap bmp) {
         this.gameView = gameView;
         this.bmp = bmp;
-        this.width = bmp.getWidth() / 4;
+        this.width = bmp.getWidth() / 6;
         this.height = bmp.getHeight();
+        this.x = x;
+        this.y = y;
         sourceRect = new Rect(0, 0, width, height);
-        detectCollision = new Rect(x, y, x + width, y + height);
+        detectCollision = new Rect((int)x, (int)y, (int)x + width, (int)y + height);
         setStartingPositionAndSpeed();
     }
 
@@ -58,40 +61,21 @@ public class Sprite {
         return this.width;
     }
 
-
-    public boolean isCollision(Projectile projectile){
-        return x < projectile.getX() + projectile.getWidth() && x + this.width > projectile.getX() && this.y < projectile.getY() + projectile.getHeight() && y + this.height > projectile.getY();
+    public boolean isCollision(Sprite sprite){
+        return x < sprite.getX() + sprite.getWidth() && x + this.width > sprite.getX() && this.y < sprite.getY() + sprite.getHeight() && y + this.height > sprite.getY();
     }
 
 
     private void setStartingPositionAndSpeed(){
-        Random rnd = new Random();
-        x = gameView.getWidth() - width;
-        y = rnd.nextInt(gameView.getHeight() - height);
-        xSpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
-        ySpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
+        xSpeed = 30;
+        ySpeed = 0;
     }
 
 
     private void update() {
-        Random rnd = new Random();
-        if (x > gameView.getWidth() - width - xSpeed) {
-            xSpeed = -xSpeed;
-        }
-
-        if (x + xSpeed < 0){
-            x = gameView.getWidth() - width;
-        }
-        if (y > gameView.getHeight() - height - ySpeed) {
-            ySpeed = -this.ySpeed;
-        }
-
-        if(y + ySpeed < 0){
-            ySpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
-        }
         x = x + xSpeed;
         y = y + ySpeed;
-        if(currentFrame ==3) {
+        if(currentFrame ==5) {
             currentFrame = 0;}
             else
             {
@@ -102,14 +86,9 @@ public class Sprite {
 
     public void onDraw(Canvas canvas) {
         update();
-//        int srcX = currentFrame * width;
-//        int srcY = height;
         this.sourceRect.left = currentFrame * width;
-
         this.sourceRect.right = this.sourceRect.left + width;
-
-//        Rect src = new Rect(srcX, srcY, srcX + width, srcY + height);
-        Rect dst = new Rect(x, y, x + width, y + height);
+        Rect dst = new Rect((int)x, (int)y, (int)x + width, (int)y + height);
         canvas.drawBitmap(bmp, sourceRect, dst, null);
     }
 }

@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.R.attr.resource;
 import static android.R.attr.width;
@@ -30,8 +31,10 @@ public class GameView extends SurfaceView {
     private Bitmap down;
     private Bitmap left;
     private Bitmap right;
+    private Bitmap fire;
     private ArrayList<Sprite> sprites;
     private ArrayList<Explosion> explosions;
+    private ArrayList<Projectile> projectiles;
     private ArrayList<Star> stars = new ArrayList<Star>();
 
     public GameView(Context context) {
@@ -40,6 +43,7 @@ public class GameView extends SurfaceView {
         holder = getHolder();
         sprites = new ArrayList<Sprite>();
         explosions = new ArrayList<Explosion>();
+        projectiles = new ArrayList<Projectile>();
         paint = new Paint();
         holder.addCallback(new SurfaceHolder.Callback() {
 
@@ -71,6 +75,8 @@ public class GameView extends SurfaceView {
     }
 
 
+
+
     private void createBackground(Canvas canvas){
         canvas.drawRGB(0, 0, 0);
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
@@ -92,6 +98,10 @@ public class GameView extends SurfaceView {
         if(direction == "right"){
             player.setMovingRight();
         }
+        if(direction == "fire"){
+            createProjectile(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
+        }
+
     }
 
     public void stopMovePlayer(String direction){
@@ -107,6 +117,9 @@ public class GameView extends SurfaceView {
         if(direction == "right"){
             player.stopMovingRight();
         }
+        if(direction == "fire"){
+//            player.stopFiring();
+        }
     }
 
     private void createSprites(){
@@ -120,7 +133,7 @@ public class GameView extends SurfaceView {
         sprites.add(createSprite(R.drawable.enemy_triangle_sprite_sheet_90_90));
 //        sprites.add(createPlayer(R.drawable.player_sprite_sheet_120_60));
         createPlayer(R.drawable.player_sprite_sheet_90_45);
-        createButtons(R.drawable.green_arrow_up, R.drawable.greenn_arrow_down, R.drawable.green_arrow_left, R.drawable.green_arrow_right);
+        createButtons(R.drawable.green_arrow_up, R.drawable.greenn_arrow_down, R.drawable.green_arrow_left, R.drawable.green_arrow_right, R.drawable.green_arrow_right);
 
     }
 
@@ -140,11 +153,18 @@ public class GameView extends SurfaceView {
         this.explosions.add(newExplosion);
     }
 
-    private void createButtons(int resource_up, int resource_down, int resource_left, int resource_right){
+    private void createProjectile(float x, float y){
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.projectile);
+        Projectile projectile = new Projectile(projectiles, this, (int)x, (int)y, bmp);
+        this.projectiles.add(projectile);
+    }
+
+    private void createButtons(int resource_up, int resource_down, int resource_left, int resource_right, int resource_fire){
         this.up = BitmapFactory.decodeResource(getResources(), resource_up);
         this.down = BitmapFactory.decodeResource(getResources(), resource_down);
         this.left = BitmapFactory.decodeResource(getResources(), resource_left);
         this.right = BitmapFactory.decodeResource(getResources(), resource_right);
+        this.fire = BitmapFactory.decodeResource(getResources(), resource_fire);
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -196,21 +216,46 @@ public class GameView extends SurfaceView {
                 stopMovePlayer("right");
             }
         }
+        //        Check fire button pushed.
+        if(x >= 600 && x <= 700 && y >= 810 && y <= 900) {
+//            Toast.makeText(this.getContext(), "Left Button pushed", Toast.LENGTH_LONG).show();
+            if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
+                movePlayer("fire");
+                return true;
+            }
+            else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+                stopMovePlayer("fire");
+            }
+        }
         return super.onTouchEvent(event);
+    }
+
+    public void removeProjectiles(){
+        for (int i = projectiles.size() - 1; i >= 0; i--){
+            Projectile projectile = projectiles.get(i);
+            if (projectile.getX() > this.getWidth()){
+                projectiles.remove(projectile);
+            }
+        }
     }
 
 
 
     public boolean collisionLoop() {
-        System.out.println("Collision loop triggered");
-
             synchronized (getHolder()) {
                 for (int i = sprites.size() - 1; i >= 0; i--) {
                     Sprite sprite = sprites.get(i);
                     if(this.player.isCollision(sprite)){
                         createExplosion(sprite.getX(), sprite.getY());
                         sprites.remove(sprite);
-
+                    }
+                    for (int z = projectiles.size() - 1; z >= 0; z--){
+                        Projectile projectile = projectiles.get(z);
+                        if(sprite.isCollision(projectile)){
+                            createExplosion(sprite.getX(), sprite.getY());
+                            sprites.remove(sprite);
+                            projectiles.remove(projectile);
+                        }
                     }
                 }
             }
@@ -220,7 +265,11 @@ public class GameView extends SurfaceView {
     @Override
     protected void onDraw(Canvas canvas) {
         createBackground(canvas);
+        removeProjectiles();
         collisionLoop();
+        for(int i = projectiles.size() -1; i >= 0; i--){
+            projectiles.get(i).onDraw(canvas);
+        }
         for (int i = explosions.size() - 1; i >= 0; i--) {
             explosions.get(i).onDraw(canvas);
         }
@@ -232,6 +281,7 @@ public class GameView extends SurfaceView {
         canvas.drawBitmap(this.down, 150, 900, null);
         canvas.drawBitmap(this.left, 50, 800, null);
         canvas.drawBitmap(this.right, 250, 800, null);
+        canvas.drawBitmap(this.fire, 600, 800, null);
     }
 }
 

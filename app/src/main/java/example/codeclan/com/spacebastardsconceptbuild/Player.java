@@ -26,6 +26,7 @@ public class Player {
     private boolean movingLeft;
     private boolean movingRight;
 
+
     public Player(GameView gameView, Bitmap bmp) {
         this.gameView = gameView;
         this.bmp = bmp;
@@ -39,8 +40,8 @@ public class Player {
     private void setStartingPositionAndSpeed(){
         x = 100;
         y = 500;
-        xSpeed = 14;
-        ySpeed =14;
+        xSpeed = 20;
+        ySpeed =20;
     }
 
     public Rect getCollisionBox(){
@@ -98,6 +99,7 @@ public class Player {
     public void stopMovingRight(){
         movingRight = false;
     }
+
 
 
     private void update() {

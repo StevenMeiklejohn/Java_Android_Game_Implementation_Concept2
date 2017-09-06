@@ -21,17 +21,13 @@ public class Explosion {
     private int width;
     private int height;
     private Bitmap bmp;
-    private int life = 15;
+    private int life = 8;
     private int currentFrame = 0;
     private Rect sourceRect;
     private List<Explosion> explosions;
 
     public Explosion(List<Explosion> explosions, GameView gameView, float x,
                       float y, Bitmap bmp) {
-//        this.x = Math.min(Math.max(x - bmp.getWidth() / 2, 0),
-//                gameView.getWidth() - bmp.getWidth());
-//        this.y = Math.min(Math.max(y - bmp.getHeight() / 2, 0),
-//                gameView.getHeight() - bmp.getHeight());
         this.x = x;
         this.y = y;
         this.bmp = bmp;
