@@ -36,6 +36,7 @@ public class GameView extends SurfaceView {
     private ArrayList<Sprite> sprites;
     private ArrayList<Explosion> explosions;
     private ArrayList<Projectile> projectiles;
+    private ArrayList<EnemyProjectile> enemyProjectiles;
     private ArrayList<Star> stars = new ArrayList<Star>();
 
     public GameView(Context context) {
@@ -45,6 +46,7 @@ public class GameView extends SurfaceView {
         sprites = new ArrayList<Sprite>();
         explosions = new ArrayList<Explosion>();
         projectiles = new ArrayList<Projectile>();
+        enemyProjectiles = new ArrayList<EnemyProjectile>();
         paint = new Paint();
         holder.addCallback(new SurfaceHolder.Callback() {
 
@@ -160,6 +162,12 @@ public class GameView extends SurfaceView {
         this.projectiles.add(projectile);
     }
 
+    private void createEnemyProjectile(float x, float y){
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.projectile_red);
+        EnemyProjectile projectile = new EnemyProjectile(enemyProjectiles, this, (int)x, (int)y, bmp);
+        this.enemyProjectiles.add(projectile);
+    }
+
     private void createButtons(int resource_up, int resource_down, int resource_left, int resource_right, int resource_fire){
         this.up = BitmapFactory.decodeResource(getResources(), resource_up);
         this.down = BitmapFactory.decodeResource(getResources(), resource_down);
@@ -243,6 +251,12 @@ public class GameView extends SurfaceView {
                 projectiles.remove(projectile);
             }
         }
+//        for (int i = enemyProjectiles.size() - 1; i >= 0; i--){
+//            EnemyProjectile projectile = enemyProjectiles.get(i);
+//            if (projectile.getX() < 0){
+//                projectiles.remove(projectile);
+//            }
+//        }
     }
 
     public void drawLives(Canvas canvas){
@@ -259,6 +273,14 @@ public class GameView extends SurfaceView {
         paint.setColor(Color.WHITE);
         paint.setTextSize(40);
         canvas.drawText("Score: " + this.player.getScore(), 300, 70, paint);
+    }
+
+    public void enemyProjectiles(){
+        for (Sprite sprite : sprites) {
+            if(sprite.isFiring()){
+               createEnemyProjectile(sprite.getX(), sprite.getY());
+            }
+        }
     }
 
 
@@ -281,10 +303,20 @@ public class GameView extends SurfaceView {
                             projectiles.remove(projectile);
                         }
                     }
+                    for (int y = enemyProjectiles.size() - 1; y >= 0; y--){
+                        EnemyProjectile projectile = enemyProjectiles.get(y);
+                        if(this.player.isProjectileCollision(projectile)){
+                            createExplosion(player.getX(), player.getY());
+                            this.player.loseLife();
+                            enemyProjectiles.remove(projectile);
+                        }
+                    }
                 }
             }
         return true;
     }
+
+
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -292,12 +324,16 @@ public class GameView extends SurfaceView {
         drawLives(canvas);
         drawScore(canvas);
         removeProjectiles();
+        enemyProjectiles();
         collisionLoop();
         for(int i = projectiles.size() -1; i >= 0; i--){
             projectiles.get(i).onDraw(canvas);
         }
         for (int i = explosions.size() - 1; i >= 0; i--) {
             explosions.get(i).onDraw(canvas);
+        }
+        for (int i = enemyProjectiles.size() - 1; i >= 0; i--) {
+            enemyProjectiles.get(i).onDraw(canvas);
         }
         for (Sprite sprite : sprites) {
             sprite.onDraw(canvas);

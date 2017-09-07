@@ -26,6 +26,8 @@ public class Sprite {
     private int height;
     private Rect sourceRect;
     private Rect detectCollision;
+    private Boolean firing;
+    private long last_time;
 
     public Sprite(GameView gameView, Bitmap bmp) {
         this.gameView = gameView;
@@ -35,6 +37,8 @@ public class Sprite {
         sourceRect = new Rect(0, 0, width, height);
         detectCollision = new Rect(x, y, x + width, y + height);
         setStartingPositionAndSpeed();
+        firing = false;
+        last_time = System.nanoTime();
     }
 
     public Rect getCollisionBox(){
@@ -61,6 +65,20 @@ public class Sprite {
 
     public boolean isCollision(Projectile projectile){
         return x < projectile.getX() + projectile.getWidth() && x + this.width > projectile.getX() && this.y < projectile.getY() + projectile.getHeight() && y + this.height > projectile.getY();
+    }
+
+    public boolean isFiring(){
+        long time = System.nanoTime();
+        int delta_time = (int) ((time - last_time) / 1000000);
+        if(delta_time > 5000){
+            this.firing = true;
+            this.last_time = time;
+            return true;
+        }
+        else{
+            return false;
+        }
+
     }
 
 

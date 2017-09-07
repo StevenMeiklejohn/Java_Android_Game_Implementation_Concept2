@@ -88,6 +88,10 @@ public class Player {
         return x < sprite.getX() + sprite.getWidth() && x + this.width > sprite.getX() && this.y < sprite.getY() + sprite.getHeight() && y + this.height > sprite.getY();
     }
 
+    public boolean isProjectileCollision(EnemyProjectile projectile){
+        return x < projectile.getX() + projectile.getWidth() && x + this.width > projectile.getX() && this.y < projectile.getY() + projectile.getHeight() && y + this.height > projectile.getY();
+    }
+
     public void setMovingUp(){
         movingUp = true;
     }
