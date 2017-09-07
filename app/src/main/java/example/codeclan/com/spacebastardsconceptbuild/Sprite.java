@@ -69,7 +69,7 @@ public class Sprite {
         x = gameView.getWidth() - width;
         y = rnd.nextInt(gameView.getHeight() - height);
         xSpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
-        ySpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
+//        ySpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
     }
 
 

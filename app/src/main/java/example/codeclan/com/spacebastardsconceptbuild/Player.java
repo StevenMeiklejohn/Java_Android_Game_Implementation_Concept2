@@ -25,6 +25,8 @@ public class Player {
     private boolean movingDown;
     private boolean movingLeft;
     private boolean movingRight;
+    private int lives;
+    private int score;
 
 
     public Player(GameView gameView, Bitmap bmp) {
@@ -35,6 +37,8 @@ public class Player {
         sourceRect = new Rect(0, 0, width, height);
         setStartingPositionAndSpeed();
         detectCollision = new Rect(x, y, x + width, y + height);
+        this.lives = 3;
+        this.score = 0;
     }
 
     private void setStartingPositionAndSpeed(){
@@ -62,6 +66,22 @@ public class Player {
 
     public int getHeight(){
         return this.height;
+    }
+
+    public int getLives(){
+        return this.lives;
+    }
+
+    public void loseLife(){
+        this.lives -= 1;
+    }
+
+    public int getScore(){
+        return this.score;
+    }
+
+    public void increaseScore(int amount){
+        this.score += amount;
     }
 
     public boolean isCollision(Sprite sprite){

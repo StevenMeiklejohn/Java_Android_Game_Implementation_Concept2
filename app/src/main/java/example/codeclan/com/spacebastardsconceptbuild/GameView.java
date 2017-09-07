@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.constraint.solver.widgets.Rectangle;
@@ -244,6 +245,22 @@ public class GameView extends SurfaceView {
         }
     }
 
+    public void drawLives(Canvas canvas){
+        Paint paint = new Paint();
+//        canvas.drawPaint(paint);
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(40);
+        canvas.drawText("LIVES: " + this.player.getLives(), 70, 70, paint);
+    }
+
+    public void drawScore(Canvas canvas){
+        Paint paint = new Paint();
+//        canvas.drawPaint(paint);
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(40);
+        canvas.drawText("Score: " + this.player.getScore(), 300, 70, paint);
+    }
+
 
 
     public boolean collisionLoop() {
@@ -253,12 +270,14 @@ public class GameView extends SurfaceView {
                     if(this.player.isCollision(sprite)){
                         createExplosion(sprite.getX(), sprite.getY());
                         sprites.remove(sprite);
+                        player.loseLife();
                     }
                     for (int z = projectiles.size() - 1; z >= 0; z--){
                         Projectile projectile = projectiles.get(z);
                         if(sprite.isCollision(projectile)){
                             createExplosion(sprite.getX(), sprite.getY());
                             sprites.remove(sprite);
+                            this.player.increaseScore(20);
                             projectiles.remove(projectile);
                         }
                     }
@@ -270,6 +289,8 @@ public class GameView extends SurfaceView {
     @Override
     protected void onDraw(Canvas canvas) {
         createBackground(canvas);
+        drawLives(canvas);
+        drawScore(canvas);
         removeProjectiles();
         collisionLoop();
         for(int i = projectiles.size() -1; i >= 0; i--){
@@ -281,7 +302,11 @@ public class GameView extends SurfaceView {
         for (Sprite sprite : sprites) {
             sprite.onDraw(canvas);
         }
-        this.player.onDraw(canvas);
+        if(this.player.getLives() > 0) {
+            this.player.onDraw(canvas);
+        }else{
+            createExplosion(this.player.getX(), this.player.getY());
+        }
         canvas.drawBitmap(this.up, 150, 700, null);
         canvas.drawBitmap(this.down, 150, 900, null);
         canvas.drawBitmap(this.left, 50, 800, null);
