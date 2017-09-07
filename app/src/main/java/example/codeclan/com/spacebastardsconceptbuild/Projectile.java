@@ -67,7 +67,7 @@ public class Projectile {
 
 
     private void setStartingPositionAndSpeed(){
-        xSpeed = 30;
+        xSpeed = 50;
         ySpeed = 0;
     }
 

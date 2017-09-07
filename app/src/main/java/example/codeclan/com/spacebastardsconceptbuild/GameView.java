@@ -133,7 +133,7 @@ public class GameView extends SurfaceView {
         sprites.add(createSprite(R.drawable.enemy_triangle_sprite_sheet_90_90));
 //        sprites.add(createPlayer(R.drawable.player_sprite_sheet_120_60));
         createPlayer(R.drawable.player_sprite_sheet_90_45);
-        createButtons(R.drawable.green_arrow_up, R.drawable.greenn_arrow_down, R.drawable.green_arrow_left, R.drawable.green_arrow_right, R.drawable.green_arrow_right);
+        createButtons(R.drawable.green_arrow_up, R.drawable.greenn_arrow_down, R.drawable.green_arrow_left, R.drawable.green_arrow_right, R.drawable.green_arrow_fire);
 
     }
 
@@ -181,6 +181,7 @@ public class GameView extends SurfaceView {
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
                 stopMovePlayer("up");
+                return true;
             }
         }
 //        Check down button pushed.
@@ -192,6 +193,7 @@ public class GameView extends SurfaceView {
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
                 stopMovePlayer("down");
+                return true;
             }
         }
 //        Check left button pushed.
@@ -203,6 +205,7 @@ public class GameView extends SurfaceView {
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
                 stopMovePlayer("left");
+                return true;
             }
         }
 //        Check right button pushed.
@@ -214,10 +217,11 @@ public class GameView extends SurfaceView {
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
                 stopMovePlayer("right");
+                return true;
             }
         }
         //        Check fire button pushed.
-        if(x >= 600 && x <= 700 && y >= 810 && y <= 900) {
+        if(x >= 1600 && x <= 1700 && y >= 810 && y <= 900) {
 //            Toast.makeText(this.getContext(), "Left Button pushed", Toast.LENGTH_LONG).show();
             if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
                 movePlayer("fire");
@@ -225,6 +229,7 @@ public class GameView extends SurfaceView {
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
                 stopMovePlayer("fire");
+                return true;
             }
         }
         return super.onTouchEvent(event);
@@ -281,7 +286,7 @@ public class GameView extends SurfaceView {
         canvas.drawBitmap(this.down, 150, 900, null);
         canvas.drawBitmap(this.left, 50, 800, null);
         canvas.drawBitmap(this.right, 250, 800, null);
-        canvas.drawBitmap(this.fire, 600, 800, null);
+        canvas.drawBitmap(this.fire, 1600, 800, null);
     }
 }
 
