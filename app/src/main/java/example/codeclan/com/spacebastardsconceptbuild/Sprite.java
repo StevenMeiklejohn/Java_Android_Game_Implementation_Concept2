@@ -28,6 +28,7 @@ public class Sprite {
     private Rect detectCollision;
     private Boolean firing;
     private long last_time;
+    private int projectileGap;
 
     public Sprite(GameView gameView, Bitmap bmp) {
         this.gameView = gameView;
@@ -70,7 +71,7 @@ public class Sprite {
     public boolean isFiring(){
         long time = System.nanoTime();
         int delta_time = (int) ((time - last_time) / 1000000);
-        if(delta_time > 5000){
+        if(delta_time > this.projectileGap){
             this.firing = true;
             this.last_time = time;
             return true;
@@ -86,7 +87,9 @@ public class Sprite {
         Random rnd = new Random();
         x = gameView.getWidth() - width;
         y = rnd.nextInt(gameView.getHeight() - height);
+
         xSpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
+        this.projectileGap = rnd.nextInt(15000-5000) + 5000;
 //        ySpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
     }
 

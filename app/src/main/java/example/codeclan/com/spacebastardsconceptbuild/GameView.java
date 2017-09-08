@@ -66,6 +66,8 @@ public class GameView extends SurfaceView {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 createSprites();
+                createPlayer();
+                createButtons();
                 gameLoopThread.setRunning(true);
                 gameLoopThread.start();
             }
@@ -135,18 +137,15 @@ public class GameView extends SurfaceView {
         sprites.add(createSprite(R.drawable.enemy_triangle_sprite_sheet_90_90));
         sprites.add(createSprite(R.drawable.enemy_triangle_sprite_sheet_90_90));
 //        sprites.add(createPlayer(R.drawable.player_sprite_sheet_120_60));
-        createPlayer(R.drawable.player_sprite_sheet_90_45);
-        createButtons(R.drawable.green_arrow_up, R.drawable.greenn_arrow_down, R.drawable.green_arrow_left, R.drawable.green_arrow_right, R.drawable.green_arrow_fire);
-
-    }
+     }
 
     private Sprite createSprite(int resource) {
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), resource);
         return new Sprite(this, bmp);
     }
 
-    private void createPlayer(int resource) {
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), resource);
+    private void createPlayer() {
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.player_sprite_sheet_90_45 );
         this.player =  new Player(this, bmp);
     }
 
@@ -168,12 +167,12 @@ public class GameView extends SurfaceView {
         this.enemyProjectiles.add(projectile);
     }
 
-    private void createButtons(int resource_up, int resource_down, int resource_left, int resource_right, int resource_fire){
-        this.up = BitmapFactory.decodeResource(getResources(), resource_up);
-        this.down = BitmapFactory.decodeResource(getResources(), resource_down);
-        this.left = BitmapFactory.decodeResource(getResources(), resource_left);
-        this.right = BitmapFactory.decodeResource(getResources(), resource_right);
-        this.fire = BitmapFactory.decodeResource(getResources(), resource_fire);
+    private void createButtons(){
+        this.up = BitmapFactory.decodeResource(getResources(), R.drawable.green_arrow_up);
+        this.down = BitmapFactory.decodeResource(getResources(), R.drawable.greenn_arrow_down);
+        this.left = BitmapFactory.decodeResource(getResources(), R.drawable.green_arrow_left);
+        this.right = BitmapFactory.decodeResource(getResources(), R.drawable.green_arrow_right);
+        this.fire = BitmapFactory.decodeResource(getResources(), R.drawable.green_arrow_fire);
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -337,6 +336,9 @@ public class GameView extends SurfaceView {
         }
         for (Sprite sprite : sprites) {
             sprite.onDraw(canvas);
+        }
+        if(sprites.size() < 1){
+            createSprites();
         }
         if(this.player.getLives() > 0) {
             this.player.onDraw(canvas);
