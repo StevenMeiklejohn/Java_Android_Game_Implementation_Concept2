@@ -2,19 +2,29 @@
 package example.codeclan.com.spacebastardsconceptbuild;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.constraint.solver.widgets.Rectangle;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.contextClickable;
+import static android.R.attr.data;
 import static android.R.attr.resource;
 import static android.R.attr.width;
 import static android.R.attr.x;
@@ -33,14 +43,17 @@ public class GameView extends SurfaceView {
     private Bitmap left;
     private Bitmap right;
     private Bitmap fire;
+
     private ArrayList<Sprite> sprites;
     private ArrayList<Explosion> explosions;
     private ArrayList<Projectile> projectiles;
     private ArrayList<EnemyProjectile> enemyProjectiles;
     private ArrayList<Star> stars = new ArrayList<Star>();
 
-    public GameView(Context context) {
+
+    public GameView(final Context context) {
         super(context);
+
         gameLoopThread = new GameLoopThread(this);
         holder = getHolder();
         sprites = new ArrayList<Sprite>();
@@ -49,6 +62,7 @@ public class GameView extends SurfaceView {
         enemyProjectiles = new ArrayList<EnemyProjectile>();
         paint = new Paint();
         holder.addCallback(new SurfaceHolder.Callback() {
+
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
@@ -63,8 +77,11 @@ public class GameView extends SurfaceView {
                 }
             }
 
+
+
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+                playMusic(context);
                 createSprites();
                 createPlayer();
                 createButtons();
@@ -79,8 +96,17 @@ public class GameView extends SurfaceView {
             });
     }
 
+    public static void playMusic(Context context){
+        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.arcade_music);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+    }
 
-
+    public static void playPlayerFire(Context context){
+        MediaPlayer mediaPlayer2 = MediaPlayer.create(context, R.raw.laser_weapon);
+        mediaPlayer2.setLooping(false);
+        mediaPlayer2.start();
+    }
 
     private void createBackground(Canvas canvas){
         canvas.drawRGB(0, 0, 0);
@@ -90,7 +116,8 @@ public class GameView extends SurfaceView {
     }
 
 
-    public void movePlayer(String direction){
+
+    public void movePlayer(String direction, Context context){
         if(direction == "up") {
             player.setMovingUp();
         }
@@ -104,7 +131,7 @@ public class GameView extends SurfaceView {
             player.setMovingRight();
         }
         if(direction == "fire"){
-            createProjectile(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2);
+            createProjectile(player.getX() + player.getWidth()/2, player.getY() + player.getHeight()/2, context);
         }
 
     }
@@ -155,10 +182,11 @@ public class GameView extends SurfaceView {
         this.explosions.add(newExplosion);
     }
 
-    private void createProjectile(float x, float y){
+    private void createProjectile(float x, float y, Context context){
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.projectile);
         Projectile projectile = new Projectile(projectiles, this, (int)x, (int)y, bmp);
         this.projectiles.add(projectile);
+        playPlayerFire(context);
     }
 
     private void createEnemyProjectile(float x, float y){
@@ -184,7 +212,7 @@ public class GameView extends SurfaceView {
         if(x >= 170 && x <= 250 && y >= 720 && y <= 800) {
 //            Toast.makeText(this.getContext(), "Up Button pushed", Toast.LENGTH_LONG).show();
             if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
-                movePlayer("up");
+                movePlayer("up", this.getContext());
                 return true;
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
@@ -196,7 +224,7 @@ public class GameView extends SurfaceView {
         if(x >= 170 && x <= 250 && y >= 910 && y <= 1000) {
 //            Toast.makeText(this.getContext(), "Down Button pushed", Toast.LENGTH_LONG).show();
             if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
-                movePlayer("down");
+                movePlayer("down", this.getContext());
                 return true;
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
@@ -208,7 +236,7 @@ public class GameView extends SurfaceView {
         if(x >= 70 && x <= 150 && y >= 810 && y <= 900) {
 //            Toast.makeText(this.getContext(), "Left Button pushed", Toast.LENGTH_LONG).show();
             if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
-                movePlayer("left");
+                movePlayer("left", this.getContext());
                 return true;
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
@@ -220,7 +248,7 @@ public class GameView extends SurfaceView {
         if(x >= 260 && x <= 350 && y >= 810 && y <= 900) {
 //            Toast.makeText(this.getContext(), "Right Button pushed", Toast.LENGTH_LONG).show();
             if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
-                movePlayer("right");
+                movePlayer("right", this.getContext());
                 return true;
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
@@ -232,7 +260,7 @@ public class GameView extends SurfaceView {
         if(x >= 1600 && x <= 1700 && y >= 810 && y <= 900) {
 //            Toast.makeText(this.getContext(), "Left Button pushed", Toast.LENGTH_LONG).show();
             if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
-                movePlayer("fire");
+                movePlayer("fire", this.getContext());
                 return true;
             }
             else if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
