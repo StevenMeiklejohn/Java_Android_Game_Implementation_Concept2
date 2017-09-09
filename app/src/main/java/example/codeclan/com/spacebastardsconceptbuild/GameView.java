@@ -49,6 +49,15 @@ public class GameView extends SurfaceView {
     private ArrayList<Projectile> projectiles;
     private ArrayList<EnemyProjectile> enemyProjectiles;
     private ArrayList<Star> stars = new ArrayList<Star>();
+    private static MediaPlayer mediaPlayer;
+    private static MediaPlayer mediaPlayer2;
+    private static MediaPlayer mediaPlayer3;
+    private static MediaPlayer mediaPlayer4;
+    private static MediaPlayer mediaPlayer5;
+    private static MediaPlayer mediaPlayer6;
+
+
+
 
 
     public GameView(final Context context) {
@@ -96,16 +105,33 @@ public class GameView extends SurfaceView {
             });
     }
 
+
+
     public static void playMusic(Context context){
-        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.arcade_music);
+        mediaPlayer = MediaPlayer.create(context, R.raw.arcade_music);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
     }
 
+
     public static void playPlayerFire(Context context){
-        MediaPlayer mediaPlayer2 = MediaPlayer.create(context, R.raw.laser_weapon);
+        mediaPlayer2 = MediaPlayer.create(context, R.raw.laser_weapon);
         mediaPlayer2.setLooping(false);
         mediaPlayer2.start();
+    }
+
+    public static void playLargeExplosion(Context context){
+        mediaPlayer3 = MediaPlayer.create(context, R.raw.large_explosion);
+        mediaPlayer3.setLooping(false);
+        mediaPlayer3.setVolume( (float)0.6, (float)0.6 );
+        mediaPlayer3.start();
+    }
+
+
+    public static void playDamage(Context context){
+        mediaPlayer4 = MediaPlayer.create(context, R.raw.damage);
+        mediaPlayer4.setLooping(false);
+        mediaPlayer4.start();
     }
 
     private void createBackground(Canvas canvas){
@@ -113,6 +139,14 @@ public class GameView extends SurfaceView {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, canvas.getWidth(), canvas.getHeight(), true);
         canvas.drawBitmap(scaledBitmap, 0, 0, null);
+    }
+
+    private void stopPlaying(MediaPlayer mp) {
+        if (mp != null) {
+            mp.stop();
+            mp.release();
+            mp = null;
+        }
     }
 
 
@@ -176,10 +210,11 @@ public class GameView extends SurfaceView {
         this.player =  new Player(this, bmp);
     }
 
-    private void createExplosion(float x, float y){
+    private void createExplosion(float x, float y, Context context){
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.explosion_sprite_sheet);
         Explosion newExplosion = new Explosion(explosions, this, x, y, bmp);
         this.explosions.add(newExplosion);
+//        playLargeExplosion( context );
     }
 
     private void createProjectile(float x, float y, Context context){
@@ -317,14 +352,21 @@ public class GameView extends SurfaceView {
                 for (int i = sprites.size() - 1; i >= 0; i--) {
                     Sprite sprite = sprites.get(i);
                     if(this.player.isCollision(sprite)){
-                        createExplosion(sprite.getX(), sprite.getY());
                         sprites.remove(sprite);
                         player.loseLife();
+                        playDamage( this.getContext() );
+                        playLargeExplosion( this.getContext() );
+                        if(this.player.getLives() == 0){
+                            stopPlaying( mediaPlayer3 );
+                            stopPlaying( mediaPlayer2 );
+                            stopPlaying( mediaPlayer4 );
+                        }
                     }
                     for (int z = projectiles.size() - 1; z >= 0; z--){
                         Projectile projectile = projectiles.get(z);
                         if(sprite.isCollision(projectile)){
-                            createExplosion(sprite.getX(), sprite.getY());
+                            createExplosion(sprite.getX(), sprite.getY(), this.getContext());
+                            playLargeExplosion( this.getContext() );
                             sprites.remove(sprite);
                             this.player.increaseScore(20);
                             projectiles.remove(projectile);
@@ -333,9 +375,16 @@ public class GameView extends SurfaceView {
                     for (int y = enemyProjectiles.size() - 1; y >= 0; y--){
                         EnemyProjectile projectile = enemyProjectiles.get(y);
                         if(this.player.isProjectileCollision(projectile)){
-                            createExplosion(player.getX(), player.getY());
+                            createExplosion(player.getX(), player.getY(), this.getContext());
                             this.player.loseLife();
+                            playDamage( this.getContext() );
+                            playLargeExplosion( this.getContext() );
                             enemyProjectiles.remove(projectile);
+                            if(this.player.getLives() == 0){
+                                stopPlaying( mediaPlayer3 );
+                                stopPlaying( mediaPlayer2 );
+                                stopPlaying( mediaPlayer4 );
+                            }
                         }
                     }
                 }
@@ -371,7 +420,7 @@ public class GameView extends SurfaceView {
         if(this.player.getLives() > 0) {
             this.player.onDraw(canvas);
         }else{
-            createExplosion(this.player.getX(), this.player.getY());
+            createExplosion(this.player.getX(), this.player.getY(), this.getContext());
         }
         canvas.drawBitmap(this.up, 150, 700, null);
         canvas.drawBitmap(this.down, 150, 900, null);
