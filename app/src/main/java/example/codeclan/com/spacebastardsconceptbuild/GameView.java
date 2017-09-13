@@ -1,6 +1,7 @@
 
 package example.codeclan.com.spacebastardsconceptbuild;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.support.constraint.solver.widgets.Rectangle;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
@@ -25,11 +27,14 @@ import java.util.List;
 
 import static android.R.attr.contextClickable;
 import static android.R.attr.data;
+import static android.R.attr.level;
 import static android.R.attr.resource;
+import static android.R.attr.value;
 import static android.R.attr.width;
 import static android.R.attr.x;
 import static android.R.attr.y;
 import static android.media.CamcorderProfile.get;
+import static android.support.v4.content.ContextCompat.startActivity;
 
 public class GameView extends SurfaceView {
     private Bitmap bmp;
@@ -43,6 +48,7 @@ public class GameView extends SurfaceView {
     private Bitmap left;
     private Bitmap right;
     private Bitmap fire;
+    private Boolean gameOver;
 
     private ArrayList<Sprite> sprites;
     private ArrayList<Explosion> explosions;
@@ -53,11 +59,6 @@ public class GameView extends SurfaceView {
     private static MediaPlayer mediaPlayer2;
     private static MediaPlayer mediaPlayer3;
     private static MediaPlayer mediaPlayer4;
-    private static MediaPlayer mediaPlayer5;
-    private static MediaPlayer mediaPlayer6;
-
-
-
 
 
     public GameView(final Context context) {
@@ -69,6 +70,7 @@ public class GameView extends SurfaceView {
         explosions = new ArrayList<Explosion>();
         projectiles = new ArrayList<Projectile>();
         enemyProjectiles = new ArrayList<EnemyProjectile>();
+        this.gameOver = false;
         paint = new Paint();
         holder.addCallback(new SurfaceHolder.Callback() {
 
@@ -148,7 +150,6 @@ public class GameView extends SurfaceView {
             mp = null;
         }
     }
-
 
 
     public void movePlayer(String direction, Context context){
@@ -239,6 +240,7 @@ public class GameView extends SurfaceView {
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
 //        Toast.makeText(this.getContext(), "Touch event triggered " + "X: " + (int) event.getX() + "Y: " + (int) event.getY(), Toast.LENGTH_LONG).show();
         int x = (int) event.getX();
         int y = (int) event.getY();
@@ -345,6 +347,34 @@ public class GameView extends SurfaceView {
         }
     }
 
+//    private void restartGame() {
+///        playMusic(context);
+//        createSprites();
+//        createPlayer();
+//        createButtons();
+//        gameLoopThread.setRunning(true);
+//        gameLoopThread.start();
+//        temps.clear();
+//        sprites.clear();
+//        numberOfGuy = numbers * level;
+//        createBarView();
+//        createSprites();
+//        gameOver = false;
+//    }
+
+    public void gameOver() {
+        mediaPlayer.stop();
+        mediaPlayer.release();
+        gameOver = true;
+        gameLoopThread.setRunning( false );
+        launchGameOver();
+    }
+
+    public void launchGameOver(){
+            Intent newIntent = new Intent(this.getContext(), GameOver.class);
+            this.getContext().startActivity(newIntent);
+    }
+
 
 
     public boolean collisionLoop() {
@@ -380,11 +410,7 @@ public class GameView extends SurfaceView {
                             playDamage( this.getContext() );
                             playLargeExplosion( this.getContext() );
                             enemyProjectiles.remove(projectile);
-                            if(this.player.getLives() == 0){
-                                stopPlaying( mediaPlayer3 );
-                                stopPlaying( mediaPlayer2 );
-                                stopPlaying( mediaPlayer4 );
-                            }
+
                         }
                     }
                 }
@@ -394,39 +420,50 @@ public class GameView extends SurfaceView {
 
 
 
+
+
     @Override
     protected void onDraw(Canvas canvas) {
-        createBackground(canvas);
-        drawLives(canvas);
-        drawScore(canvas);
-        removeProjectiles();
-        enemyProjectiles();
-        collisionLoop();
-        for(int i = projectiles.size() -1; i >= 0; i--){
-            projectiles.get(i).onDraw(canvas);
+        if(this.player.getLives() < 1){
+            gameOver();
         }
-        for (int i = explosions.size() - 1; i >= 0; i--) {
-            explosions.get(i).onDraw(canvas);
+        else {
+
+            createBackground( canvas );
+            drawLives( canvas );
+            drawScore( canvas );
+            removeProjectiles();
+            enemyProjectiles();
+            collisionLoop();
+            for (int i = projectiles.size() - 1; i >= 0; i--) {
+                projectiles.get( i ).onDraw( canvas );
+            }
+            for (int i = explosions.size() - 1; i >= 0; i--) {
+                explosions.get( i ).onDraw( canvas );
+            }
+            for (int i = enemyProjectiles.size() - 1; i >= 0; i--) {
+                enemyProjectiles.get( i ).onDraw( canvas );
+            }
+            for (Sprite sprite : sprites) {
+                sprite.onDraw( canvas );
+            }
+            if (sprites.size() < 1) {
+                createSprites();
+            }
+            if (this.player.getLives() > 0) {
+                this.player.onDraw( canvas );
+            } else {
+                createExplosion( this.player.getX(), this.player.getY(), this.getContext() );
+            }
         }
-        for (int i = enemyProjectiles.size() - 1; i >= 0; i--) {
-            enemyProjectiles.get(i).onDraw(canvas);
-        }
-        for (Sprite sprite : sprites) {
-            sprite.onDraw(canvas);
-        }
-        if(sprites.size() < 1){
-            createSprites();
-        }
-        if(this.player.getLives() > 0) {
-            this.player.onDraw(canvas);
-        }else{
-            createExplosion(this.player.getX(), this.player.getY(), this.getContext());
-        }
+
         canvas.drawBitmap(this.up, 150, 700, null);
         canvas.drawBitmap(this.down, 150, 900, null);
         canvas.drawBitmap(this.left, 50, 800, null);
         canvas.drawBitmap(this.right, 250, 800, null);
         canvas.drawBitmap(this.fire, 1600, 800, null);
     }
+
+
 }
 

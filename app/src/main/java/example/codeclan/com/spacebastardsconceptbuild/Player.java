@@ -44,8 +44,8 @@ public class Player {
     private void setStartingPositionAndSpeed(){
         x = 100;
         y = 500;
-        xSpeed = 20;
-        ySpeed =20;
+        xSpeed = 40;
+        ySpeed =40;
     }
 
     public Rect getCollisionBox(){

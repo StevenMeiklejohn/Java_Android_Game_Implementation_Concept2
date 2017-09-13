@@ -11,7 +11,7 @@ import java.util.Random;
 public class Sprite {
 //    private static final int BMP_ROWS = 6;
 //    private static final int BMP_COLUMNS = 4;
-    private static final int MAX_SPEED = 10;
+    private static final int MAX_SPEED = 20;
     private int x;
     private int y;
     private int xSpeed;
@@ -87,9 +87,8 @@ public class Sprite {
         Random rnd = new Random();
         x = gameView.getWidth() - width;
         y = rnd.nextInt(gameView.getHeight() - height);
-
-        xSpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
-        this.projectileGap = rnd.nextInt(15000-5000) + 5000;
+        xSpeed = rnd.nextInt(MAX_SPEED) + 10;
+        this.projectileGap = rnd.nextInt(15000) + 3000;
 //        ySpeed = rnd.nextInt(MAX_SPEED * 2) - MAX_SPEED/3;
     }
 

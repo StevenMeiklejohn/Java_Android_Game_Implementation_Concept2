@@ -8,49 +8,6 @@
 
 
 
-    <ImageView
-        android:id="@+id/up"
-        android:layout_width="100px"
-        android:layout_height="100px"
-        android:layout_gravity="center"
-        android:background="@drawable/up_white"
-        android:layout_marginBottom="33dp"
-        android:layout_above="@+id/down"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
-    <ImageView
-        android:id="@+id/left"
-        android:layout_width="100px"
-        android:layout_height="100px"
-        android:layout_gravity="center"
-        android:layout_marginEnd="21dp"
-        android:layout_marginRight="21dp"
-        android:background="@drawable/left_white"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/right"
-        android:layout_toStartOf="@+id/right" />
-
-    <ImageView
-        android:id="@+id/right"
-        android:layout_width="100px"
-        android:layout_height="100px"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/left"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center"
-        android:background="@drawable/right_white" />
-
-    <ImageView
-        android:id="@+id/down"
-        android:layout_width="100px"
-        android:layout_height="100px"
-        android:layout_alignLeft="@+id/up"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/up"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center"
-        android:background="@drawable/down_white" />
 
 </android.support.constraint.ConstraintLayout>
