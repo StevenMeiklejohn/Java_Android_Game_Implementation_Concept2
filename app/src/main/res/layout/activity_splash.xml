@@ -19,6 +19,7 @@
         android:scaleType="fitXY"
         android:src="@drawable/space_bastards"
         tools:layout_editor_absoluteX="-17dp"
-        tools:layout_editor_absoluteY="16dp"/>
+        tools:layout_editor_absoluteY="16dp"
+        />
 
 </RelativeLayout>
