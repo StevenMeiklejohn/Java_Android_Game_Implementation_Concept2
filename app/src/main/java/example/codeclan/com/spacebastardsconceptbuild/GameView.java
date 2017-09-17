@@ -399,6 +399,9 @@ public class GameView extends SurfaceView {
     public void gameOver() {
         mediaPlayer.stop();
         mediaPlayer.release();
+        mediaPlayer2.release();
+        mediaPlayer3.release();
+        mediaPlayer4.release();
         gameOver = true;
         gameLoopThread.setRunning( false );
         launchGameOver();

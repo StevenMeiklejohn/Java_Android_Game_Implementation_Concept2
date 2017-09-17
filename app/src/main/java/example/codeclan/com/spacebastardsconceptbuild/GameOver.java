@@ -13,12 +13,12 @@ public class GameOver extends AppCompatActivity {
         setContentView( R.layout.activity_gameover );
     }
 
-//    public boolean onTouchEvent(MotionEvent event) {
-//        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//            startActivity(new Intent(getApplicationContext(),MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-//
-//        }
-//        return super.onTouchEvent(event);
-//    }
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            startActivity(new Intent(getApplicationContext(),MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+        }
+        return super.onTouchEvent(event);
+    }
 
 }
