@@ -17,9 +17,7 @@
         android:adjustViewBounds="false"
         android:rotation="0"
         android:scaleType="fitXY"
-        android:src="@drawable/space_bastards"
-        tools:layout_editor_absoluteX="-17dp"
-        tools:layout_editor_absoluteY="16dp"
+        android:src="@drawable/splash_screen2"
         />
 
 </RelativeLayout>
